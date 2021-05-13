@@ -113,7 +113,18 @@ class SkintypeView(View):
 
         # skin_type_id 와 skin_type 일 때 차이?
         # 역참조 방식 생각해보기, skin.User_set.create(user.skin_type_id=skin.id)
-        return JsonResponse({'MESSAGE':user.skin_type_id}, status=200)
+        return JsonResponse({'MESSAGE':'Skintype check'}, status=200)
+
+class SkintypedeleteView(View):
+    @decorator
+    def post(self, request):
+        
+        user   = request.user
+        users  = User.objects.get(id=user.id)
+        users.skin_type_id = None
+        users.save()
+        
+        return JsonResponse({'MESSAGE':'Skintype delete'}, status=200)
 
 class AddressView(View):
     @decorator
@@ -128,4 +139,15 @@ class AddressView(View):
         user.save()
 
         return JsonResponse({'MESSAGE':'Adress check'}, status=200)
+
+class AddressdeleteView(View):
+    @decorator
+    def post(self, request):
+        
+        user   = request.user
+        users  = User.objects.get(id=user.id)
+        users.address = ''
+        users.save()
+        
+        return JsonResponse({'MESSAGE':'Address delete'}, status=200)
 
