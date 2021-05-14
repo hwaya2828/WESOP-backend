@@ -7,7 +7,6 @@ from django.views import View
 
 from users.models import User, SkinType
 from my_settings  import SECRET
-from users.utils  import decorator
 
 
 class SignupView(View):
@@ -60,94 +59,3 @@ class SignupView(View):
 
         except KeyError: 
             return JsonResponse({'MESSAGE':'KeyError'}, status=400)
-
-
-class LoginView(View):
-    def post(self, request):
-        data=json.loads(request.body)
-
-        signin_email    = data['email']
-        signin_password = data['password']
-
-        if not signin_email and not signin_password:
-        	return JsonResponse({"MESSAGE":"KEYERROR"}, status=400)
-       
-        if not User.objects.filter(email=signin_email).exists():
-        	return JsonResponse({"MESSAGE":"INVALID_EMAIL"}, status=400)
-
-        user            = User.objects.get(email=signin_email)         
-        hashed_password = user.password.encode('utf-8')
-
-        if not bcrypt.checkpw(signin_password.encode('utf-8'), hashed_password):
-            return JsonResponse({'MESSAGE':'INVALID_USER'}, status=401)
-
-        access_token = jwt.encode(
-                    {'user_id' : user.id, 'exp':datetime.utcnow()+timedelta(minutes=120)}, 
-                    SECRET, 
-                    algorithm = 'HS256'
-                )
-        access_token = access_token.decode('utf-8')
-
-        return JsonResponse({"token":access_token} ,status=200)    
-
-# class LogoutView(View):
-#     @decorator
-#     def logout(self,request):
-#         # json으로 받아서, token=''으로 변경, front에 return하면 front에서 token=0일시 token 삭제 logic 있으면 어떨까?
-
-#         return redirect(본문 url?)
-
-class SkintypeView(View):
-    @decorator
-    def post(self, request):
-        data = json.loads(request.body)
-        
-        skin_type = data['skin_type']
-        user      = request.user
-
-        skin              = SkinType.objects.get(name=skin_type)
-        skin_id           = skin.id
-        user.skin_type_id = skin_id 
-        user.save()
-        # User.objects.get(id=user_id).update(skin_type_id=skin_id)
-
-        # skin_type_id 와 skin_type 일 때 차이?
-        # 역참조 방식 생각해보기, skin.User_set.create(user.skin_type_id=skin.id)
-        return JsonResponse({'MESSAGE':'Skintype check'}, status=200)
-
-class SkintypedeleteView(View):
-    @decorator
-    def post(self, request):
-        
-        user   = request.user
-        users  = User.objects.get(id=user.id)
-        users.skin_type_id = None
-        users.save()
-        
-        return JsonResponse({'MESSAGE':'Skintype delete'}, status=200)
-
-class AddressView(View):
-    @decorator
-    def post(self, request):
-        data = json.loads(request.body)
-
-        address = data['address']
-        user    = request.user
-
-        # User.objects.get(id=user_id).update(address = address)
-        user.address = address
-        user.save()
-
-        return JsonResponse({'MESSAGE':'Address check'}, status=200)
-
-class AddressdeleteView(View):
-    @decorator
-    def post(self, request):
-        
-        user   = request.user
-        users  = User.objects.get(id=user.id)
-        users.address = ''
-        users.save()
-        
-        return JsonResponse({'MESSAGE':'Address delete'}, status=200)
-
