@@ -69,14 +69,14 @@ class LoginView(View):
         signin_email    = data['email']
         signin_password = data['password']
 
-        user            = User.objects.get(email=signin_email)         
-        hashed_password = user.password.encode('utf-8')
-            
         if not signin_email and not signin_password:
-        	return JsonResponse({"messege":"KEYERROR"}, status=400)
+        	return JsonResponse({"MESSAGE":"KEYERROR"}, status=400)
        
         if not User.objects.filter(email=signin_email).exists():
-        	return JsonResponse({"messege":"INVALID_EMAIL"}, status=400)
+        	return JsonResponse({"MESSAGE":"INVALID_EMAIL"}, status=400)
+
+        user            = User.objects.get(email=signin_email)         
+        hashed_password = user.password.encode('utf-8')
 
         if not bcrypt.checkpw(signin_password.encode('utf-8'), hashed_password):
             return JsonResponse({'MESSAGE':'INVALID_USER'}, status=401)
@@ -138,7 +138,7 @@ class AddressView(View):
         user.address = address
         user.save()
 
-        return JsonResponse({'MESSAGE':'Adress check'}, status=200)
+        return JsonResponse({'MESSAGE':'Address check'}, status=200)
 
 class AddressdeleteView(View):
     @decorator
