@@ -10,12 +10,12 @@ class MetaView(View):
         menus = Menu.objects.all()
 
         results = [{
-                "menu_name"     : menu.name,
-                "category_list" : [{
-                                "category_name"     : category.name,
-                                "description_title" : category.description_title if category.description_title else None, 
-                                "description"       : category.description if category.description else None 
-                                } for category in menu.category_set.all()]
-                } for menu in menus]
+                    "menu_name"     : menu.name,
+                    "category_list" : [{
+                                        "category_name"     : category.name,
+                                        "description_title" : category.description_title if category.description_title else None,
+                                        "description"       : category.description if category.description else None
+                                        } for category in menu.category_set.all()]
+                    } for menu in menus]
 
         return JsonResponse({'result': results}, status=200)
