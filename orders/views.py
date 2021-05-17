@@ -34,11 +34,9 @@ class CartAddView(View):
             )
 
         if OrderList.objects.filter(product_selection_id=selection.id).exists(): 
-            #get이면 none 인 경우 error 발생, filter는 발생안함, get 과 filter의 차이란...
             OrderList.objects.update(
                 quantity = OrderList.objects.get(product_selection_id=selection.id).quantity +1
             )
-        #같은 제품 한 번 더 누를 경우 만들기
         else:
             OrderList.objects.create(
             order_id = Order.objects.get(status_id=2).id,
@@ -112,32 +110,33 @@ class CartCheckView(View):
         except OrderList.DoesNotExist:
             return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
 
-# class OrderCheckView(View):
-#     @decorator
-#     def post(self, request):
-#         try:
-#             data    = json.loads(request.body)
+class OrderCheckView(View):
+    @decorator
+    def post(self, request):
+        try:
+            data    = json.loads(request.body)
 
-#             user = request.user
-#             order_id= Order.objects.get(status_id=2).id #에러 except
-#             cartlists = OrderList.objects.all() #에러 except 
+            user = request.user
+            order_id= Order.objects.get(status_id=2).id #에러 except
+            cartlists = OrderList.objects.all() #에러 except 
 
-#             for cartlist in cartlists:
-#                 selection_id = cartlist.product_selection_id
-#                 select        = ProductSelection.objects.filter(id=selection_id)
-#                 total        = select.price * cartlist.quantity
+            for cartlist in cartlists:
+                selection_id = cartlist.product_selection_id
+                select        = ProductSelection.objects.filter(id=selection_id)
+                total        = select.price * cartlist.quantity
 
-#                 Order.objects.filter(status_id=2).update(
-#                         status_id    = 1, #status table에 yes 는 id 1 , no는 id 2로 설정 예정
-#                         address      = user.address,
-#                         memo         = '',
-#                         total_price  = total if total >= 50000 else total+3000,
-#                         free_delivery= True if total >= 50000 else False
-#                     )
+                Order.objects.filter(status_id=2).update(
+                        status_id    = 1, #status table에 yes 는 id 1 , no는 id 2로 설정 예정
+                        address      = user.address,
+                        memo         = '',
+                        total_price  = total if total >= 50000 else total+3000,
+                        free_delivery= True if total >= 50000 else False
+                    )
 
-#             return JsonResponse({'MESSAGE':'SUCCESS'}, status=200)
+            return JsonResponse({'MESSAGE':'SUCCESS'}, status=200)
 
-#         except KeyError:
-#             return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
-#         except:
-#                 return JsonResponse({'MESSAGE':'noting in cart'}, status=200)
+        except KeyError:
+            return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
+
+        # except:
+        #     return JsonResponse({'MESSAGE':'noting in cart'}, status=400)
