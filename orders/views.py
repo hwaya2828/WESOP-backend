@@ -62,6 +62,8 @@ class CartQuantityView(View):
             selection_id = ProductSelection.objects.filter(product_id = data['product_id'], size=data['size']).id
             cartlist    = OrderList.objects.get(production_selection_id = selection_id) #에러
             cartlist.quantity = data['quantity']
+            cartlist.save()
+            
             return JsonResponse({'MESSAGE':'Product quantity in cart updated.'}, status=200)
         
         except :
