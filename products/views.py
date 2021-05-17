@@ -21,8 +21,11 @@ class DetailProductView(View):
 
         results = {
                         "menu_name"                : menu.name,
+                        "menu_id"                  : menu.id,
                         "category_name"            : category.name,
+                        "category_id"              : category.id,
                         "product_name"             : product.name,
+                        "product_id"               : product.id,
                         "description"              : product.description,
                         "content"                  : product.content,
                         "content_image_url"        : product.content_image_url,
