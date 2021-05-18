@@ -10,6 +10,8 @@ from my_settings  import SECRET
 
 from users.utils  import Authorization_decorator
 
+
+
 class UserInformationView(View):
     @Authorization_decorator
     def post(self, request):
