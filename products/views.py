@@ -31,6 +31,7 @@ class ProductListView(View):
     def get(self, request):
         menu_id     = request.GET.get('menu_id', None)
         category_id = request.GET.get('category_id', None)
+        filterings  = request.GET.getlist('filtering_id', None)
 
         q = Q()
 
@@ -43,6 +44,11 @@ class ProductListView(View):
 
         products      = Product.objects.filter(q)
         total_results = []
+
+        if filterings:
+            products = Product.objects
+            for filtering in filterings:
+                products = products.filter(feature=filtering)
 
         for product in products:
             category           = product.category
