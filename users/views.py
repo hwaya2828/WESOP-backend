@@ -79,7 +79,6 @@ class LoginView(View):
 
         if not bcrypt.checkpw(signin_password.encode('utf-8'), hashed_password):
             return JsonResponse({'MESSAGE':'INVALID_USER'}, status=401)
-
         access_token = jwt.encode(
                     {'user_id' : user.id, 'exp':datetime.utcnow()+timedelta(minutes=120)}, 
                     SECRET, 

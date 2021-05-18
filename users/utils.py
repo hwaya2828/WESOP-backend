@@ -14,7 +14,7 @@ def Authorization_decorator(func):
     def wrapper(self, request, *arg, **kwarg):
         try:
                 access_token = request.headers.get('Authorization',None) 
-                
+                print(access_token)
                 payload      = jwt.decode(
                     access_token, 
                     SECRET, 
@@ -27,8 +27,8 @@ def Authorization_decorator(func):
         except jwt.exceptions.ExpiredSignatureError:
                 return JsonResponse({'message':'Token has expired'}, status=401)
 
-        except jwt.exceptions.DecodeError:
-                return JsonResponse({'message':'INVALID_TOKEN'},status=401)
+        # except jwt.exceptions.DecodeError:
+        #         return JsonResponse({'message':'INVALID_TOKEN'},status=404)
 
         except User.DoesNotExist:
                 return JsonResponse({'message':'INVALID_USER'},status=401)
