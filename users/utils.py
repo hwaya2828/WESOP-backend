@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from my_settings            import SECRET
 from users.models           import User
 
-def decorator(func):
+def Authorization_decorator(func):
 
     def wrapper(self, request, *arg, **kwarg):
         try:
@@ -26,8 +26,8 @@ def decorator(func):
         except jwt.exceptions.ExpiredSignatureError:
                 return JsonResponse({'message':'Token has expired'}, status=401)
 
-        # except jwt.exceptions.DecodeError:
-        #         return JsonResponse({'message':'INVALID_TOKEN'},status=401)
+        except jwt.exceptions.DecodeError:
+                return JsonResponse({'message':'INVALID_TOKEN'},status=401)
 
         except User.DoesNotExist:
                 return JsonResponse({'message':'INVALID_USER'},status=401)
