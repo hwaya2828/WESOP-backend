@@ -4,6 +4,7 @@ from datetime     import datetime, timedelta
 
 from django.http  import JsonResponse
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 
 from users.models import User, SkinType
 from my_settings  import SECRET
@@ -17,16 +18,20 @@ class UserInformationView(View):
         user = request.user
         info = 'Nothing'
 
-        if data['skin_type'] != '' :
-            info              = data['skin_type']
-            skin              = SkinType.objects.get(name=info) if info!='empty' else '' 
-            skin_id           = skin.id if skin else ''
-            user.skin_type_id = skin_id 
-            user.save()
-        
-        if data['address'] != '' :
-            info = data['address'] 
-            user.address = info if info != 'empty' else ''
-            user.save()
+        try:
+            if data['skin_type'] != '' :
+                info              = data['skin_type']
+                skin              = SkinType.objects.get(name=info) if info!='empty' else '' 
+                skin_id           = skin.id if skin else ''
+                user.skin_type_id = skin_id 
+                user.save()
+            
+            if data['address'] != '' :
+                info = data['address'] 
+                user.address = info if info != 'empty' else ''
+                user.save()
 
-        return JsonResponse({'MESSAGE': f'update {info}'}, status=200)
+            return JsonResponse({'MESSAGE': f'update {info}'}, status=200)
+        
+        except SkinType.DoesNotExist:
+            return JsonResponse({'MESSAGE':'Invalid skintype request'}, status=400)
