@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from my_settings            import SECRET
 from users.models           import User
 
-def decorator(func):
+def Authorization_decorator(func):
 
     def wrapper(self, request, *arg, **kwarg):
         try:
