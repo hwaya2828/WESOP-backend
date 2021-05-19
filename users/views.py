@@ -16,19 +16,19 @@ class UserInformationView(View):
     def post(self, request):
         data = json.loads(request.body)
         user = request.user
-        info = 'Nothing'
+        information = 'Nothing'
 
         try:
             if data['skin_type'] != '' :
                 information       = data['skin_type']
-                skin              = SkinType.objects.get(name=info) if info!='empty' else '' 
+                skin              = SkinType.objects.get(name=information) if information!='empty' else '' 
                 skin_id           = skin.id if skin else ''
                 user.skin_type_id = skin_id 
                 user.save()
             
             if data['address'] != '' :
                 information = data['address'] 
-                user.address = info if info != 'empty' else ''
+                user.address = information if information != 'empty' else ''
                 user.save()
 
             return JsonResponse({'MESSAGE': f'update {information}'}, status=200)
