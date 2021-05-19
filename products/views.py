@@ -3,7 +3,7 @@ import json
 from django.http      import JsonResponse
 from django.views     import View
 
-from products.models  import Menu, Product, ProductSelection, FeatureCategory
+from products.models  import Menu, Product, FeatureCategory
 
 class MetaView(View):
     def get(self, request):
@@ -33,12 +33,10 @@ class DetailProductView(View):
 
         product = Product.objects.get(id=product_id)
 
-        category           = product.category
-        menu               = category.menu
-        ingredients        = product.ingredient.all()
-        product_selections = product.productselection_set.all()
-        product.count      += 1
-        # product.save() 프로젝트 완성되면 카운트 쌓을 예정입니다 :)
+        category      = product.category
+        menu          = category.menu
+        product.count += 1
+        product.save()
 
         results = {
                         "menu_name"                 : menu.name,
@@ -50,13 +48,13 @@ class DetailProductView(View):
                         "product_description"       : product.description,
                         "product_content"           : product.content,
                         "product_content_image_url" : product.content_image_url,
-                        "product_ingredients"       : [ingredient.name for ingredient in ingredients],
+                        "product_ingredients"       : [ingredient.name for ingredient in product.ingredient.all()],
                         "product_selections"  : [
                             {
                                 "size"      : product_selection.size,
                                 "price"     : product_selection.price,
                                 "image_url" : product_selection.image_url
-                            } for product_selection in product_selections
+                            } for product_selection in product.productselection_set.all()
                         ]
         }
 
@@ -73,15 +71,14 @@ class DetailProductView(View):
 
 class PopularProduct(View):
     def get(self, request):
-        products = Product.objects.all().order_by('-count')[:5]
+        count_ranking = 5
+        products = Product.objects.all().order_by('-count')[:count_ranking]
 
         total_results = []
 
         for product in products:
-            category           = product.category
-            menu               = category.menu
-            ingredients        = product.ingredient.all()
-            product_selections = ProductSelection.objects.filter(product_id=product.id)
+            category = product.category
+            menu     = category.menu
 
             feature_result = [
                 {
@@ -104,13 +101,13 @@ class PopularProduct(View):
                     "product_features"           : feature_result,
                     "product_content"            : product.content,
                     "product_content_image_url"  : product.content_image_url,
-                    "product_ingredients"        : [ingredient.name for ingredient in ingredients],
+                    "product_ingredients"        : [ingredient.name for ingredient in product.ingredient.all()],
                     "product_selections"         : [
                         {
                             "size"      : product_selection.size,
                             "price"     : product_selection.price,
                             "image_url" : product_selection.image_url
-                        } for product_selection in product_selections
+                        } for product_selection in product.productselection_set.all()
                     ]
                 }
             ]
