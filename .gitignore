@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,visualstudiocode,vim,macos,linux,zsh
 
 my_settings.py
+db_update.py
 
 ### Linux ###
 *~
