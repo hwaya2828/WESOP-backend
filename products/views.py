@@ -134,4 +134,4 @@ class DetailProductView(View):
 
         results["product_features"] = feature_result
 
-        return JsonResponse({'result':results}, status=200)
+        return JsonResponse({'result': results}, status=200)
