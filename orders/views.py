@@ -16,21 +16,20 @@ from users.utils     import Authorization_decorator
 class CartView(View):
     @Authorization_decorator
     def post(self, request):
-        data    = json.loads(request.body)
-        selection   = ProductSelection.objects.get(product_id = data['product_id'], size = data['size'])
-        # selection = product.get(size = data['size'])
+        data      = json.loads(request.body)
+        selection = ProductSelection.objects.get(product_id = data['product_id'], size = data['size'])
         status_id = OrderStatus.objects.get(name='주문 전').id
         user_id   = request.user.id
-        #if 절 둘 다 exist로, update_or_create 생각해서 refactor하기
-        if not Order.objects.filter(status_id = status_id).exists():
-            Order.objects.create(
-                user_id = user_id,
-                status_id=status_id, #status table에 yes 는 id 1 , no는 id 2로 설정 예정
-                address='',
-                memo='',
-                total_price= 0,
-                free_delivery=False
-            )
+        
+        order, created = Order.objects.get_or_create(status_id=status_id, defaults={
+                'user_id' : user_id,
+                'status_id':status_id, 
+                'address' : '',
+                'memo': '',
+                'total_price' : '0',
+                'free_delivery' : False
+        })
+
         if OrderList.objects.filter(product_selection_id=selection.id).exists(): 
             cartlist = OrderList.objects.get(product_selection_id=selection.id)
             cartlist.quantity += 1
@@ -41,14 +40,23 @@ class CartView(View):
             product_selection_id= selection.id,
             quantity = 1
         )        
+
+        # order_id = Order.objects.get(status_id=status_id).id
+
+        # orderlist, updated = OrderList.objects.update_or_create(product_selection_id=selection.id, default={
+        #             'order_id' : order_id,
+        #             'product_selection_id' : selection.id,
+        #             'quantity' : # 카트 내 상품이 기존재하는 경우 +1만 하려면 어떻게 표현할 수 있을까요? 
+        # })
         
         return JsonResponse({'MESSAGE':'Product add in cart.'}, status=200)
 
     @Authorization_decorator
     def delete(self, request):
         try:
-            data    = json.loads(request.body)
+            data      = json.loads(request.body)
             selection = ProductSelection.objects.get(product_id = data['product_id'], size=data['size'])
+            
             OrderList.objects.get(product_selection_id = selection.id).delete() 
 
             return JsonResponse({'MESSAGE':'Product deleted from cart.'}, status=200)
@@ -81,6 +89,7 @@ class CartView(View):
         try:
             cartlists   = OrderList.objects.all() 
             result = []
+            
             for cartlist in cartlists:
                 selection_id = cartlist.product_selection_id
                 product_id   = ProductSelection.objects.get(id=selection_id).product_id
@@ -103,48 +112,3 @@ class CartView(View):
 
         except OrderList.DoesNotExist:
             return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
-
-class OrderCheckView(View):
-    @Authorization_decorator
-    def get(self, request):
-        try:
-            user = request.user
-            status_id = OrderStatus.objects.get(name='주문 전').id
-            order_id= Order.objects.get(status_id=status_id).id #에러 except
-            cartlists = OrderList.objects.all() 
-
-            result=[]
-
-            for cartlist in cartlists:
-                selection_id = cartlist.product_selection_id
-                select        = ProductSelection.objects.get(id=selection_id)
-                status_id    =OrderStatus.objects.get(name='주문 전').id
-                status_id_done = OrderStatus.objects.get(name='주문 후').id
-                total        = select.price * cartlist.quantity
-
-                Order.objects.filter(status_id=status_id).update(
-                        status_id    = status_id_done, #status table에 yes 는 id 1 , no는 id 2로 설정 예정
-                        address      = user.address,
-                        memo         = '',
-                        total_price  = total if (total >= 50000) else (total+3000), 
-                        free_delivery= True if (total >= 50000) else False 
-                    )
-            
-                order_dict = {
-                    'name': Product.objects.get(id=select.product_id).name,
-                    'quantity': cartlist.quantity ,
-                    'total_price': Order.objects.get(id=cartlist.order_id).total_price,
-                    'purchased_at': Order.objects.get(id=cartlist.order_id).purchased_at,
-                    'address': User.objects.get(id=user.id).address
-                } # 주문내용 어떤거 return?, address 없는 경우 입력하세요도 필요?
-                result.append(order_dict)
-
-            OrderList.objects.all().delete()
-
-            return JsonResponse({'result':result}, status=200)
-
-        except KeyError:
-            return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
-
-        except OrderList.DoesNotExist:
-            return JsonResponse({'MESSAGE':'noting in cart'}, status=400)
