@@ -1,10 +1,10 @@
-import json, operator, functools
+import json
 
 from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from products.models  import Ingredient, Menu, Category, Product, ProductSelection, FeatureCategory
+from products.models  import Menu, Category, Product, ProductSelection, FeatureCategory
 
 class MetaView(View):
     def get(self, request):
