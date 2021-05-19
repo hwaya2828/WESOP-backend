@@ -95,8 +95,7 @@ class DetailProductView(View):
         if not Product.objects.filter(id=product_id).exists():
             return JsonResponse({'MESSAGE':'INVALID_PATH'}, status=404)
 
-        product = Product.objects.get(id=product_id)
-
+        product       = Product.objects.get(id=product_id)
         category      = product.category
         menu          = category.menu
         product.count += 1
