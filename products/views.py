@@ -4,7 +4,7 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from products.models  import Menu, Category, Product, ProductSelection, FeatureCategory
+from products.models  import Menu, Product, FeatureCategory
 
 class MetaView(View):
     def get(self, request):
@@ -39,29 +39,23 @@ class ProductListView(View):
 
         if menu_id:
             q = Q(category__menu_id=menu_id)
-        elif category_id:
+        if category_id:
             q = Q(category_id=category_id)
-        else:
-            return JsonResponse({'MESSAGE':'INVALID_PATH'}, status=404)
 
         products = Product.objects.filter(q)
 
         if skintype_ids:
             products = products.filter(Q(feature__in=skintype_ids))
-
         if productfeature_ids:
             products = products.filter(Q(feature__in=productfeature_ids))
-
         if ingredient_ids:
             products = products.filter(Q(ingredient__in=ingredient_ids))
 
         total_results = []
 
         for product in set(products):
-            category           = product.category
-            menu               = category.menu
-            ingredients        = product.ingredient.all()
-            product_selections = ProductSelection.objects.filter(product_id=product.id)
+            category = product.category
+            menu     = category.menu
 
             feature_result = [
                 {
@@ -84,13 +78,13 @@ class ProductListView(View):
                     "product_features"           : feature_result,
                     "product_content"            : product.content,
                     "product_content_image_url"  : product.content_image_url,
-                    "product_ingredients"        : [ingredient.name for ingredient in ingredients],
+                    "product_ingredients"        : [ingredient.name for ingredient in product.ingredient.all()],
                     "product_selections"         : [
                         {
                             "size"      : product_selection.size,
                             "price"     : product_selection.price,
                             "image_url" : product_selection.image_url
-                        } for product_selection in product_selections
+                        } for product_selection in product.productselection_set.all()
                     ]
                 }
             ]
@@ -106,12 +100,10 @@ class DetailProductView(View):
 
         product = Product.objects.get(id=product_id)
 
-        category           = product.category
-        menu               = category.menu
-        ingredients        = product.ingredient.all()
-        product_selections = product.productselection_set.all()
-        product.count      += 1
-        # product.save() 프로젝트 완성되면 카운트 쌓을 예정입니다 :)
+        category      = product.category
+        menu          = category.menu
+        product.count += 1
+        product.save()
 
         results = {
                         "menu_name"                 : menu.name,
@@ -123,13 +115,13 @@ class DetailProductView(View):
                         "product_description"       : product.description,
                         "product_content"           : product.content,
                         "product_content_image_url" : product.content_image_url,
-                        "product_ingredients"       : [ingredient.name for ingredient in ingredients],
+                        "product_ingredients"       : [ingredient.name for ingredient in product.ingredient.all()],
                         "product_selections"  : [
                             {
                                 "size"      : product_selection.size,
                                 "price"     : product_selection.price,
                                 "image_url" : product_selection.image_url
-                            } for product_selection in product_selections
+                            } for product_selection in product.productselection_set.all()
                         ]
         }
 
