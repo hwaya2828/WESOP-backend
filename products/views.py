@@ -36,11 +36,8 @@ class ProductListView(View):
         ingredient_ids     = request.GET.getlist('ingredient_id', None)
 
         q = Q()
-
-        if menu_id:
-            q = Q(category__menu_id=menu_id)
-        if category_id:
-            q = Q(category_id=category_id)
+        q.add(Q(category__menu_id=menu_id), q.OR)
+        q.add(Q(category_id=category_id), q.OR)
 
         products = Product.objects.filter(q)
 
