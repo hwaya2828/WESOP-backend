@@ -32,10 +32,6 @@ class ProductListView(View):
         menu_id     = request.GET.get('menu_id', None)
         category_id = request.GET.get('category_id', None)
 
-        skintype_ids       = request.GET.getlist('skintype_id', None)
-        productfeature_ids = request.GET.getlist('productfeature_id', None)
-        ingredient_ids     = request.GET.getlist('ingredient_id', None)
-
         q = Q()
 
         if menu_id and Menu.objects.filter(id=menu_id).exists():
@@ -45,20 +41,22 @@ class ProductListView(View):
         else:
             return JsonResponse({'MESSAGE':'INVALID_PATH'}, status=404)
 
-        products      = Product.objects.filter(q)
-        total_results = []
+        products = Product.objects.filter(q)
+
+        skintype_ids       = request.GET.getlist('skintype_id', None)
+        productfeature_ids = request.GET.getlist('productfeature_id', None)
+        ingredient_ids     = request.GET.getlist('ingredient_id', None)
 
         if skintype_ids:
-            skintype_filter = Q(feature__in=skintype_ids)
-            products = products.filter(skintype_filter)
+            products = products.filter(Q(feature__in=skintype_ids))
 
         if productfeature_ids:
-            productfeature_filter = Q(feature__in=productfeature_ids)
-            products = products.filter(productfeature_filter)
+            products = products.filter(Q(feature__in=productfeature_ids))
 
         if ingredient_ids:
-            ingredient_filter = Q(ingredient__in=ingredient_ids)
-            products = products.filter(ingredient_filter)
+            products = products.filter(Q(ingredient__in=ingredient_ids))
+
+        total_results = []
 
         for product in set(products):
             category           = product.category
