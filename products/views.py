@@ -29,23 +29,22 @@ class MetaView(View):
 
 class ProductListView(View):
     def get(self, request):
-        menu_id     = request.GET.get('menu_id', None)
-        category_id = request.GET.get('category_id', None)
+        menu_id            = request.GET.get('menu_id', None)
+        category_id        = request.GET.get('category_id', None)
+        skintype_ids       = request.GET.getlist('skintype_id', None)
+        productfeature_ids = request.GET.getlist('productfeature_id', None)
+        ingredient_ids     = request.GET.getlist('ingredient_id', None)
 
         q = Q()
 
-        if menu_id and Menu.objects.filter(id=menu_id).exists():
+        if menu_id:
             q = Q(category__menu_id=menu_id)
-        elif category_id and Category.objects.filter(id=category_id):
+        elif category_id:
             q = Q(category_id=category_id)
         else:
             return JsonResponse({'MESSAGE':'INVALID_PATH'}, status=404)
 
         products = Product.objects.filter(q)
-
-        skintype_ids       = request.GET.getlist('skintype_id', None)
-        productfeature_ids = request.GET.getlist('productfeature_id', None)
-        ingredient_ids     = request.GET.getlist('ingredient_id', None)
 
         if skintype_ids:
             products = products.filter(Q(feature__in=skintype_ids))
