@@ -1,10 +1,10 @@
-import json
+import json, operator, functools
 
 from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
-from products.models  import Menu, Category, Product, ProductSelection, FeatureCategory
+from products.models  import Ingredient, Menu, Category, Product, ProductSelection, FeatureCategory
 
 class MetaView(View):
     def get(self, request):
@@ -31,7 +31,10 @@ class ProductListView(View):
     def get(self, request):
         menu_id     = request.GET.get('menu_id', None)
         category_id = request.GET.get('category_id', None)
-        filterings  = request.GET.getlist('filtering_id', None)
+
+        skintype_ids       = request.GET.getlist('skintype_id', None)
+        productfeature_ids = request.GET.getlist('productfeature_id', None)
+        ingredient_ids     = request.GET.getlist('ingredient_id', None)
 
         q = Q()
 
@@ -45,12 +48,19 @@ class ProductListView(View):
         products      = Product.objects.filter(q)
         total_results = []
 
-        if filterings:
-            products = Product.objects
-            for filtering in filterings:
-                products = products.filter(feature=filtering)
+        if skintype_ids:
+            skintype_filter = Q(feature__in=skintype_ids)
+            products = products.filter(skintype_filter)
 
-        for product in products:
+        if productfeature_ids:
+            productfeature_filter = Q(feature__in=productfeature_ids)
+            products = products.filter(productfeature_filter)
+
+        if ingredient_ids:
+            ingredient_filter = Q(ingredient__in=ingredient_ids)
+            products = products.filter(ingredient_filter)
+
+        for product in set(products):
             category           = product.category
             menu               = category.menu
             ingredients        = product.ingredient.all()
