@@ -27,8 +27,8 @@ def Authorization_decorator(func):
         except jwt.exceptions.ExpiredSignatureError:
                 return JsonResponse({'message':'Token has expired'}, status=401)
 
-        # except jwt.exceptions.DecodeError:
-        #         return JsonResponse({'message':'INVALID_TOKEN'},status=404)
+        except jwt.exceptions.DecodeError:
+                return JsonResponse({'message':'INVALID_TOKEN'},status=404)
 
         except User.DoesNotExist:
                 return JsonResponse({'message':'INVALID_USER'},status=401)

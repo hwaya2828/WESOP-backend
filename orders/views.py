@@ -58,7 +58,7 @@ class CartView(View):
             selection = ProductSelection.objects.get(product_id = data['product_id'], size=data['size'])
             
             OrderList.objects.get(product_selection_id = selection.id).delete() 
-
+            
             return JsonResponse({'MESSAGE':'Product deleted from cart.'}, status=200)
         
         except KeyError:
@@ -101,7 +101,8 @@ class CartView(View):
                     'size'    :ProductSelection.objects.get(id=selection_id).size,
                     'quantity':cartlist.quantity,
                     'price'   :ProductSelection.objects.get(id=selection_id).price,
-                    'added_at':Order.objects.get(status_id=status_id).purchased_at
+                    'added_at':Order.objects.get(status_id=status_id).purchased_at,
+                    'product_id': product_id
                 }
                 result.append(cart_dict)
 
@@ -109,6 +110,3 @@ class CartView(View):
 
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
-
-        except OrderList.DoesNotExist:
-            return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
