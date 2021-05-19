@@ -34,6 +34,7 @@ class ProductListView(View):
         skintype_ids       = request.GET.getlist('skintype_id', None)
         productfeature_ids = request.GET.getlist('productfeature_id', None)
         ingredient_ids     = request.GET.getlist('ingredient_id', None)
+        search_name        = request.GET.get('search_name', None)
 
         q = Q()
         q.add(Q(category__menu_id=menu_id), q.OR)
@@ -47,6 +48,9 @@ class ProductListView(View):
             products = products.filter(Q(feature__in=productfeature_ids))
         if ingredient_ids:
             products = products.filter(Q(ingredient__in=ingredient_ids))
+
+        if search_name:
+            products = Product.objects.filter(name=search_name)
 
         total_results = []
 
