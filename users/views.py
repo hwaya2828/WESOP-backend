@@ -20,18 +20,18 @@ class UserInformationView(View):
 
         try:
             if data['skin_type'] != '' :
-                info              = data['skin_type']
+                information       = data['skin_type']
                 skin              = SkinType.objects.get(name=info) if info!='empty' else '' 
                 skin_id           = skin.id if skin else ''
                 user.skin_type_id = skin_id 
                 user.save()
             
             if data['address'] != '' :
-                info = data['address'] 
+                information = data['address'] 
                 user.address = info if info != 'empty' else ''
                 user.save()
 
-            return JsonResponse({'MESSAGE': f'update {info}'}, status=200)
+            return JsonResponse({'MESSAGE': f'update {information}'}, status=200)
         
         except SkinType.DoesNotExist:
             return JsonResponse({'MESSAGE':'Invalid skintype request'}, status=400)
