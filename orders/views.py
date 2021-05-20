@@ -131,34 +131,64 @@ class OrderCheckView(View):
 
             result=[]
 
+            total_price = 0
+
             for cartlist in cartlists:
                 selection_id = cartlist.product_selection_id
                 select       = ProductSelection.objects.get(id=selection_id)
                 total        = select.price * cartlist.quantity
+                total_price  = total_price + total
 
-                Order.objects.filter(status_id=status_id, user_id=user.id).update(
-                        status_id    = status_id_done, 
-                        address      = user.address,
-                        memo         = '',
-                        total_price  = total if (total >= 50000) else (total+3000), 
-                        free_delivery= True if (total >= 50000) else False 
-                    )
+            Order.objects.filter(status_id=status_id, user_id=user.id).update(
+                    status_id    = status_id_done, 
+                    address      = user.address,
+                    memo         = '',
+                    total_price  = total_price if (total_price >= 50000) else (total+3000), 
+                    free_delivery= True if (total_price >= 50000) else False 
+                )
             
-                order_dict = {
-                    'name'        : Product.objects.get(id=select.product_id).name,
-                    'quantity'    : cartlist.quantity ,
-                    'total_price' : Order.objects.get(id=cartlist.order_id).total_price,
-                    'purchased_at': Order.objects.get(id=cartlist.order_id).purchased_at,
-                    'address'     : User.objects.get(id=user.id).address
-                } 
-                result.append(order_dict)
+            # OrderList.objects.filter(order_id=order.id).delete()
 
-            OrderList.objects.filter(order_id=order.id).delete()
-
-            return JsonResponse({'result':result}, status=200)
+            return JsonResponse({'MESSAGE':"SUCCESS"}, status=200)
 
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
 
         except Exception as e:
             return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
+
+class OrderGetView(View):
+    @Authorization_decorator
+    def get(self, request):
+        try:
+            user        = request.user
+            status_id_done = OrderStatus.objects.get(name='주문 후').id
+
+            if (not Order.objects.filter(status_id=status_id_done, user_id=user.id)):
+                raise Exception
+
+            orders = Order.objects.filter(status_id=status_id_done, user_id=user.id) 
+            result = []
+
+            for order in orders:
+                products = list(OrderList.objects.filter(order_id=order.id))
+
+                for product in products:
+                    selection_id = product.product_selection_id
+                    select    = ProductSelection.objects.get(id=selection_id)
+
+                    order_dict = {
+                            'name'        : Product.objects.get(id=select.product_id).name,
+                            'quantity'    : product.quantity ,
+                            'total_price' : select.price * product.quantity,
+                            'purchased_at': order.purchased_at,
+                            'address'     : order.address
+                        } 
+                    result.append(order_dict)
+
+            return JsonResponse({'result':result}, status=200)
+        except KeyError:
+            return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
+
+        except Exception as e:
+            return JsonResponse({'MESSAGE':'NO ORDER HISTORY'}, status=400)
