@@ -39,6 +39,7 @@ class ProductListView(View):
         q = Q()
         q.add(Q(category__menu_id=menu_id), q.OR)
         q.add(Q(category_id=category_id), q.OR)
+        q.add(Q(name=search_name), q.OR)
 
         products = Product.objects.filter(q)
 
@@ -48,9 +49,6 @@ class ProductListView(View):
             products = products.filter(Q(feature__in=productfeature_ids))
         if ingredient_ids:
             products = products.filter(Q(ingredient__in=ingredient_ids))
-
-        if search_name:
-            products = Product.objects.filter(name=search_name)
 
         total_results = []
 
