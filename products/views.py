@@ -71,8 +71,8 @@ class DetailProductView(View):
 
 class PopularProduct(View):
     def get(self, request):
-        count_ranking = 5
-        products = Product.objects.all().order_by('-count')[:count_ranking]
+        COUTN_RANKING = 5
+        products = Product.objects.all().order_by('-count')[:COUTN_RANKING]
 
         total_results = []
 
