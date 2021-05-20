@@ -147,8 +147,6 @@ class OrderCheckView(View):
                     free_delivery= True if (total_price >= 50000) else False 
                 )
             
-            # OrderList.objects.filter(order_id=order.id).delete()
-
             return JsonResponse({'MESSAGE':"SUCCESS"}, status=200)
 
         except KeyError:
@@ -179,10 +177,10 @@ class OrderGetView(View):
 
                     order_dict = {
                             'name'        : Product.objects.get(id=select.product_id).name,
-                            'quantity'    : product.quantity ,
-                            'total_price' : select.price * product.quantity,
-                            'purchased_at': order.purchased_at,
-                            'address'     : order.address
+                            'quantity'    : product.quantity,
+                            'price'       : select.price,               
+                            'size'        : ProductSelection.objects.get(id=selection_id).size,
+                            'date'        : Order.objects.get(id=product.order_id).purchased_at
                         } 
                     result.append(order_dict)
 
