@@ -1,17 +1,43 @@
 import json, re, bcrypt, jwt
 
-from datetime     import datetime, timedelta
+from datetime               import datetime, timedelta
 
-from django.http  import JsonResponse
-from django.views import View
+from django.http            import JsonResponse
+from django.views           import View
+from django.core.exceptions import ObjectDoesNotExist
 
-from users.models import User, SkinType
-from my_settings  import SECRET
+from users.models           import User, SkinType
+from my_settings            import SECRET
 
+from users.utils            import Authorization_decorator
 
-class SignupView(View):
+class UserInformationView(View):
+    @Authorization_decorator
+    def post(self, request):
+        data = json.loads(request.body)
+        user = request.user
+        information = 'Nothing'
 
-    def post(self,request):
+        try:
+            if data['skin_type'] != '' :
+                information       = data['skin_type']
+                skin              = SkinType.objects.get(name=information) if information!='empty' else '' 
+                skin_id           = skin.id if skin else ''
+                user.skin_type_id = skin_id 
+                user.save()
+            
+            if data['address'] != '' :
+                information = data['address'] 
+                user.address = information if information != 'empty' else ''
+                user.save()
+
+            return JsonResponse({'MESSAGE': f'update {information}'}, status=200)
+        
+        except SkinType.DoesNotExist:
+            return JsonResponse({'MESSAGE':'Invalid skintype request'}, status=400)
+
+class SingUpView(View):
+    def post(self, request):
         try:
             data  = json.loads(request.body)
 
@@ -55,29 +81,32 @@ class SignupView(View):
             return JsonResponse({'MESSAGE':'KeyError'}, status=400)
 
 class LoginView(View):
-
     def post(self, request):
-        data=json.loads(request.body)
+        try:
+            data=json.loads(request.body)
 
-        signin_email    = data['email']
-        signin_password = data['password']
+            signin_email    = data['email']
+            signin_password = data['password']
 
-        if not signin_email and not signin_password:
-            return JsonResponse({"MESSAGE":"KEYERROR"}, status=400)
+            if not signin_email and not signin_password:
+                return JsonResponse({"MESSAGE":"KEYERROR"}, status=400)
 
-        if not User.objects.filter(email=signin_email).exists():
-            return JsonResponse({"MESSAGE":"INVALID_EMAIL"}, status=400)
+            if not User.objects.filter(email=signin_email).exists():
+                return JsonResponse({"MESSAGE":"INVALID_EMAIL"}, status=400)
 
-        user            = User.objects.get(email=signin_email)         
-        hashed_password = user.password.encode('utf-8')
+            user            = User.objects.get(email=signin_email)         
+            hashed_password = user.password.encode('utf-8')
 
-        if not bcrypt.checkpw(signin_password.encode('utf-8'), hashed_password):
-            return JsonResponse({'MESSAGE':'INVALID_PASSWORD'}, status=401)
+            if not bcrypt.checkpw(signin_password.encode('utf-8'), hashed_password):
+                return JsonResponse({'MESSAGE':'INVALID_PASSWORD'}, status=401)
 
-        access_token = jwt.encode(
-                    {'user_id' : user.id, 'exp':datetime.utcnow()+timedelta(minutes=120)}, 
-                    SECRET, 
-                    algorithm = 'HS256'
-                )
+            access_token = jwt.encode(
+                        {'user_id' : user.id, 'exp':datetime.utcnow()+timedelta(minutes=120)}, 
+                        SECRET, 
+                        algorithm = 'HS256'
+                    )
 
-        return JsonResponse({"token":access_token, "MESSAGE":"SUCCESS"} ,status=200)
+            return JsonResponse({"token":access_token, "MESSAGE":"SUCCESS"} ,status=200)
+
+        except KeyError: 
+            return JsonResponse({'MESSAGE':'KeyError'}, status=400)
