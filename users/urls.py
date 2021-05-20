@@ -4,5 +4,5 @@ from users.views    import UserInformationView
 
 
 urlpatterns = [
-            path('/userinformation', UserInformationView.as_view()),
+            path('/information', UserInformationView.as_view()),
 ]
