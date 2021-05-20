@@ -1,15 +1,15 @@
 import json, re, bcrypt, jwt
 
-from datetime     import datetime, timedelta
+from datetime               import datetime, timedelta
 
-from django.http  import JsonResponse
-from django.views import View
+from django.http            import JsonResponse
+from django.views           import View
 from django.core.exceptions import ObjectDoesNotExist
 
-from users.models import User, SkinType
-from my_settings  import SECRET
+from users.models           import User, SkinType
+from my_settings            import SECRET
 
-from users.utils  import Authorization_decorator
+from users.utils            import Authorization_decorator
 
 class UserInformationView(View):
     @Authorization_decorator
