@@ -16,63 +16,58 @@ class CartView(View):
     @Authorization_decorator
     def post(self, request):
         data      = json.loads(request.body)
-
+        user      = request.user
         selection = ProductSelection.objects.get(product_id = data['product_id'], size = data['size'])
-        status_id = OrderStatus.objects.get(name='주문 전').id
-        user_id   = request.user.id
+        status    = OrderStatus.objects.get(name='주문 전')
         
-        order, created = Order.objects.get_or_create(status_id=status_id, user_id=user_id, defaults={
-                'user_id' : user_id,
-                'status_id':status_id, 
+        order, created = Order.objects.get_or_create(status=status, user=user, defaults={
+                'user_id' : user.id,
+                'status_id':status.id, 
                 'address' : '',
                 'memo': '',
                 'total_price' : '0',
                 'free_delivery' : False
         })
 
-        if OrderList.objects.filter(product_selection_id=selection.id, order_id=order.id).exists(): 
-            cartlist = OrderList.objects.get(product_selection_id=selection.id, order_id=order.id)
-            cartlist.quantity += 1
-            cartlist.save()
+        cartlist = OrderList.objects.filter(product_selection=selection, order=order)
+        if cartlist.exists(): 
+            cartlist[0].quantity += 1
+            cartlist[0].save()
         else:
             OrderList.objects.create(
-            order_id = Order.objects.get(status_id=status_id, user_id=user_id).id,
+            order_id            = order.id,
             product_selection_id= selection.id,
-            quantity = 1
+            quantity            = 1
         )        
 
         return JsonResponse({'MESSAGE':'Product add in cart.'}, status=200)
 
     @Authorization_decorator
-    def delete(self, request):
+    def delete(self, request, cart_id):
         try:
-            data      = json.loads(request.body)
+            cart = OrderList.objects.get(id=cart_id)
             
-            user_id    = request.user.id
-            status_id  = OrderStatus.objects.get(name='주문 전').id
-            order_id   = Order.objects.get(status_id = status_id, user_id = user_id)
-            selection  = ProductSelection.objects.get(product_id = data['product_id'], size=data['size'])
+            if cart.order.status != '주문 전':
+                return JsonResponse({'MESSAGE':'already ordered'}, status=400)
             
-            OrderList.objects.get(product_selection_id = selection.id, order_id=order_id).delete() 
-            
+            cart.delete()
             return JsonResponse({'MESSAGE':'Product deleted from cart.'}, status=200)
         
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
-
         except OrderList.DoesNotExist:
             return JsonResponse({'MESSAGE':'already not exist in cart'}, status=400)
-        
+
     @Authorization_decorator
     def patch(self, request):
         try:
             data              = json.loads(request.body)
+            user              = request.user
+            status            = OrderStatus.objects.get(name='주문 전')
 
-            user_id           = request.user.id
-            status_id         = OrderStatus.objects.get(name='주문 전').id
-            order_id          = Order.objects.get(status_id = status_id, user_id = user_id)
-            selection         = ProductSelection.objects.get(product_id = data['product_id'], size=data['size'])
-            cartlist          = OrderList.objects.get(product_selection_id = selection.id, order_id=order_id) 
+            order             = OrderList.objects.get(order__status = status, order__user = user)
+            selection         = OrderList.objects.get(product_selection__product__id = data['product_id'], product_selection__size=data['size'])
+            cartlist          = OrderList.objects.get(product_selection = selection, order=order) 
             cartlist.quantity = data['quantity']
             cartlist.save()
             
@@ -80,30 +75,25 @@ class CartView(View):
         
         except KeyError:
             return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
-
         except OrderList.DoesNotExist:
             return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
 
     @Authorization_decorator
     def get(self, request):
         try:
-            user_id     = request.user.id
-            status_id   = OrderStatus.objects.get(name='주문 전').id
-            order_id    = Order.objects.get(status_id = status_id, user_id = user_id)
-            cartlists   = OrderList.objects.filter(order_id = order_id)
+            user        = request.user
+            carts       = OrderList.objects.filter(order__status__name = '주문 전', order__user = user)
             result      = []
             
-            for cartlist in cartlists:
-                selection_id = cartlist.product_selection_id
-                product_id   = ProductSelection.objects.get(id=selection_id).product_id
-
+            for cart in carts:
                 cart_dict = {
-                    'name'      :Product.objects.get(id=product_id).name,
-                    'size'      :ProductSelection.objects.get(id=selection_id).size,
-                    'quantity'  :cartlist.quantity,
-                    'price'     :ProductSelection.objects.get(id=selection_id).price,
-                    'added_at'  :Order.objects.get(status_id=status_id, user_id=user_id).purchased_at,
-                    'product_id':product_id
+                    'cart_id'   : cart.id,
+                    'name'      : cart.product_selection.product.name,
+                    'size'      : cart.product_selection.size,
+                    'quantity'  : cart.quantity,
+                    'price'     : cart.product_selection.price,
+                    'added_at'  : cart.order.purchased_at,
+                    'product_id': cart.product_selection.product.id
                 }
                 result.append(cart_dict)
 

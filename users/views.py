@@ -36,7 +36,7 @@ class UserInformationView(View):
         except SkinType.DoesNotExist:
             return JsonResponse({'MESSAGE':'Invalid skintype request'}, status=400)
 
-class SingUpView(View):
+class SignUpView(View):
     def post(self, request):
         try:
             data  = json.loads(request.body)

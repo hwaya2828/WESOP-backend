@@ -1,3 +1,4 @@
+from itertools import product
 from django.urls    import path
 
 from products.views import MetaView, DetailProductView, PopularProduct
