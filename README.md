@@ -3,44 +3,95 @@
 - 스킨케어 브랜드 이솝을 벤치마킹
 - 12일이라는 짧은기간동안 기획, 디자인에 소요되는 시간을 단축시키고 화면,기능 구현과 리팩토링에 중점을 두기위한 1차 클론코딩 프로젝트
 
-## 프로젝트 기간
+## 프로젝트 인원 및 기간
 
-2021.05.10 ~ 2021.05.21
+-**기간**: 2021.05.10 ~ 2021.05.21
+
+-**인원**  
+
+Frontend  
+김도은, 김휘성, 최원근 
+
+Backend  
+양미화, [문성호](https://github.com/Room9)
+
+## 프로젝트 
+
+- Frontend : 
+
+- Backend  : E-commerce의 기본 기능 구현에 초점을 맞췄습니다  
+            (1)회원가입 (2)로그인 (3)개인 정보 수정 (4) 메뉴 카테고리 (5)상품 상제정보 (6) 장바구니 (7) 구매 내역 확인  
+            
+**Modeling**   
+[Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb)*(Password : 723o35)*
+
+**Github**   
+[Wesop-Backend](https://github.com/wecode-bootcamp-korea/20-1st-WESOP-backend)
+
+**시연 영상**    
+Wesop(시연 영상 첨부 필요)
 
 ## 팀원
 
-Frontend 
 
-- 🧼 최원근
+### Frontend 
+
+🧼 **최원근**
 
   - 로그인 : 
   - 회원가입 :
 
   
 
-- 🧴 김도은 
+🧴 **김도은**
 
   - 장바구니 :
 
   
 
-- 🛀 김휘성
+🛀 **김휘성**
 
   - 상세페이지 :
   - 카트추가 : fetch API 사용하여
 
-Backend:
+### Backend
 
-- 🧴 양미화
+🧴 **양미화**
 
   - 상세페이지 : 
   - 상품리스트 :
 
   
 
-- 🧼 문성호
+🧼 **문성호**
 
-  - 로그인 :
-  - 회원가입 :
+  - 회원가입 
+  
+  - 로그인
+  
+  - 비밀번호 암호화, 토큰 발행  
+    bcrypt 활용한 비밀번호 hash 암호화/ jwt 발행
+    
+  - 유효성 판단  
+    정규 표현식 활용
+    
+  - 장바구니 상품 추가 삭제 수정 조회   
+    endpoint 통일 / http method와 path parameter를 통한 request 구현
+   
+  - 구매전환 및 구매내역 추가
 
-> Wesop 사이트는 스킨케어 브랜드 Aesop을 참고하여 학습목적으로 만들어진 사이트이며, 사용된 이미지들은 Unsplash.com의 무료저작권 이미지들이 사용되었습니다
+## Skills
+
+### Frond-end skill
+
+### Back-end skill
+-Django  
+-Python  
+-MySQL  
+-Bcrypt, JWT  
+-AWS EC2, RDS  
+
+## Reference
+- 이 프로젝트는 aesop 사이트를 참조하여 학습목적으로 만들었습니다.
+- 실무수준의 프로젝트이지만 학습용으로 만들었기 때문에 이 코드를 활용하여 이득을 취하거나 무단 배포할 경우 법적으로 문제될 수 있습니다.
+- Wesop 사이트는 스킨케어 브랜드 Aesop을 참고하여 학습목적으로 만들어진 사이트이며, 사용된 이미지들은 Unsplash.com의 무료저작권 이미지들이 사용되었습니다
