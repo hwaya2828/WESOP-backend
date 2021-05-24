@@ -38,7 +38,7 @@ Wesop (시연 영상 첨부 필요)
 🧼 **최원근**
 
  Authentication (인증 : 로그인, 회원가입)
- - 로그인, 회원가입 : 
+ - 로그인, 회원가입 :   
  UI 애니메이션 적용하여 생동감 표현 ( :focus-within, @keyframes ).  
  백앤드와 JWT 통신, (회원인증, 정보교류) access_Token.  
  로컬 스토리지,세션 스토리지, 쿠키 사용.  
