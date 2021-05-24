@@ -7,11 +7,11 @@
 
 - **기간** : 2021.05.10 ~ 2021.05.21
 
-✨ Frontend  
-[김도은](https://github.com/dosilv), [김휘성](https://github.com/Heessong), [최원근](https://github.com/choiwk) 
+- ✨ Frontend  
+  - [김도은](https://github.com/dosilv), [김휘성](https://github.com/Heessong), [최원근](https://github.com/choiwk) 
 
-✨ Backend  
-[양미화](https://github.com/hwaya2828), [문성호](https://github.com/Room9)
+- ✨ Backend  
+  - [양미화](https://github.com/hwaya2828), [문성호](https://github.com/Room9)
 
 ## 프로젝트 
 
@@ -23,10 +23,10 @@
   - (1)회원가입 (2)로그인 (3)개인 정보 수정 (4)상품 리스트 (5)상품 상제 정보 (6)필터링 (7)검색 (8)인기 상품 리스트 (9)장바구니 (10)구매 내역 확인  
 
 - **Modeling**   
-[Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb)*(Password : 723o35)*
+  - [Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb)*(Password : 723o35)*
 
 - **시연 영상**    
-Wesop(시연 영상 첨부 필요)
+  - Wesop(시연 영상 첨부 필요)
 <br>
 
 ### Frontend 
