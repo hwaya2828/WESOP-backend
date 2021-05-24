@@ -47,7 +47,7 @@ class CartView(View):
         try:
             cart = OrderList.objects.get(id=cart_id)
             
-            if cart.order.status != '주문 전':
+            if cart.order.status.name != '주문 전':
                 return JsonResponse({'MESSAGE':'already ordered'}, status=400)
             
             cart.delete()
@@ -61,13 +61,10 @@ class CartView(View):
     @Authorization_decorator
     def patch(self, request):
         try:
-            data              = json.loads(request.body)
-            user              = request.user
-            status            = OrderStatus.objects.get(name='주문 전')
-
-            order             = OrderList.objects.get(order__status = status, order__user = user)
-            selection         = OrderList.objects.get(product_selection__product__id = data['product_id'], product_selection__size=data['size'])
-            cartlist          = OrderList.objects.get(product_selection = selection, order=order) 
+            data = json.loads(request.body)
+            user = request.user
+            cartlist = OrderList.objects.get(product_selection__product__id = data['product_id'], product_selection__size=data['size'],order__status__name = '주문 전', order__user = user)
+            print(cartlist)
             cartlist.quantity = data['quantity']
             cartlist.save()
             
@@ -103,3 +100,52 @@ class CartView(View):
             return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
         except Order.DoesNotExist:
             return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
+
+class OrderCheckView(View):
+    @Authorization_decorator
+    def get(self, request):
+        try:
+            user        = request.user
+            status_done = OrderStatus.objects.get(name='주문 후')
+            cartlists   = OrderList.objects.filter(order__status__name='주문 전', order__user=user)
+            if not cartlists:
+                return JsonResponse({'MESSAGE':'nothing in cart'}, status=400)
+            total_price = 0
+            for cartlist in cartlists:
+                price        = cartlist.product_selection.price
+                total        = price * cartlist.quantity
+                total_price  = total_price + total
+            Order.objects.filter(status__name='주문 전', user=user).update(
+                    status_id    = status_done.id,
+                    address      = user.address,
+                    memo         = '',
+                    total_price  = total_price if (total_price >= 50000) else (total+3000),
+                    free_delivery= True if (total_price >= 50000) else False
+                )
+            return JsonResponse({'MESSAGE':"SUCCESS"}, status=200)
+        except KeyError:
+            return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)
+            
+class OrderGetView(View):
+    @Authorization_decorator
+    def get(self, request):
+        try:
+            user           = request.user
+            status_done    = OrderStatus.objects.get(name='주문 후')
+            products       = OrderList.objects.filter(order__status__name='주문 후', order__user=user)
+            if not products:
+                return JsonResponse({'MESSAGE':'NO ORDER HISTORY'}, status=400)
+            result = []
+            for product in products:
+                order_dict = {
+                        'name'        : product.product_selection.product.name,
+                        'quantity'    : product.quantity,
+                        'price'       : product.product_selection.price,
+                        'size'        : product.product_selection.size,
+                        'date'        : product.order.purchased_at,
+                        'product_id'  : product.product_selection.product.id
+                    }
+                result.append(order_dict)
+            return JsonResponse({'result':result}, status=200)
+        except KeyError:
+            return JsonResponse({'MESSAGE':'KEY ERROR'}, status=400)

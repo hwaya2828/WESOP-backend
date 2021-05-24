@@ -39,7 +39,7 @@ class ProductListView(View):
         q = Q()
         q.add(Q(category__menu_id=menu_id), q.OR)
         q.add(Q(category_id=category_id), q.OR)
-        q.add(Q(name=search_name), q.OR)
+        q.add(Q(name__contains=search_name), q.OR)
 
         products = Product.objects.filter(q)
 
