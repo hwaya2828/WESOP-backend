@@ -8,19 +8,35 @@
 - **기간** : 2021.05.10 ~ 2021.05.21
 
 - ✨ **Frontend**  
-  - [김도은](https://github.com/dosilv), [김휘성](https://github.com/Heessong), [최원근](https://github.com/choiwk) 
+  - [김도은](https://github.com/dosilv)
+  - [김휘성](https://github.com/Heessong)
+  - [최원근](https://github.com/choiwk)  
 
 - ✨ **Backend**
-  - [양미화](https://github.com/hwaya2828), [문성호](https://github.com/Room9)
+  - [양미화](https://github.com/hwaya2828)
+  - [문성호](https://github.com/Room9)
 
 ## 프로젝트 
 
-- Frontend 
-  - (1)메인 페이지 & 상품 리스트 & 상세 페이지 애니메이션 및 레이아웃 (2)로그인 & 회원가입 인증 (3)장바구니 기능 (4)검색 기능 (5)동적 라우팅
+- Frontend
+  - 메인 페이지
+  - 상품 리스트
+  - 상세 페이지 애니메이션 및 레이아웃 
+  - 로그인 / 회원가입 인증
+  - 장바구니 기능
+  - 검색 기능
+  - 동적 라우팅
 
-- Backend
-  - E-commerce의 기본 기능 구현에 초점을 맞췄습니다
-  - (1)회원가입 (2)로그인 (3)개인 정보 수정 (4)상품 리스트 (5)상품 상제 정보 (6)필터링 (7)검색 (8)인기 상품 리스트 (9)장바구니 (10)구매 내역 확인  
+- Backend : E-commerce의 기본 기능 구현에 중점
+    - 회원가입, 로그인
+    - 개인 정보 수정 
+    - 상품 리스트 
+    - 상품 상제 정보 
+    - 필터링
+    - 검색기능
+    - 인기 상품 리스트
+    - 장바구니
+    - 구매 내역 확인  
 
 - **Modeling**   
   - [Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb) *(Password : 723o35)*
