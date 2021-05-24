@@ -1,4 +1,4 @@
-# Team Wesop
+# ❣️ Team Wesop
 
 - 스킨케어 브랜드 이솝을 벤치마킹
 - 12일이라는 짧은 기간 동안 기획, 디자인에 소요되는 시간을 단축시키고 화면 & 기능 구현과 리팩토링에 중점을 두기 위한 1차 클론코딩 프로젝트
@@ -10,10 +10,10 @@
 
 <br>
 
-Frontend  
+✨ Frontend  
 [김도은](https://github.com/dosilv), [김휘성](https://github.com/Heessong), [최원근](https://github.com/choiwk) 
 
-Backend  
+✨ Backend  
 [양미화](https://github.com/hwaya2828), [문성호](https://github.com/Room9)
 
 <br>
