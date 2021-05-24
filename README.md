@@ -26,9 +26,6 @@ Backend
 **Modeling**   
 [Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb)*(Password : 723o35)*
 
-**Github**   
-[Wesop-Backend](https://github.com/wecode-bootcamp-korea/20-1st-WESOP-backend)
-
 **시연 영상**    
 Wesop (시연 영상 첨부 필요)
 
