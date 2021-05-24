@@ -63,16 +63,16 @@ UI 애니메이션 적용하여 생동감 표현 ( :focus-within, @keyframes ).
 ### Backend
 
 🧴 **양미화**
-  - 상품 리스트 : 메뉴별 혹은 카테고리별 상품 리스트. 
-    Query parameter를 사용하여 메뉴별 혹은 카테고리별 상품 데이터 전송
-  - 상품 상제 정보 : 상품 상세 페이지. 
-    Path parameter를 사용하여 특정 상품의 상세 데이터 전송
-  - 필터링 : 메뉴별 혹은 카테고리별 상품 필터링. 
-    Q 객체를 사용하여 필터 조건에 따라 상품을 거르고 해당 상품들의 데이터를 전송
-  - 검색 : 상품 검색. 
-    상품명에 검색어가 포함된 상품들의 데이터를 전송
-  - 인기 상품 리스트 : 인기 상품 추천. 
-    상품 상세 페이지 조회수를 기준으로 상위 5개 인기 상품의 데이터를 전송
+  - 상품 리스트 : 메뉴별 혹은 카테고리별 상품 리스트
+    <br>Query parameter를 사용하여 메뉴별 혹은 카테고리별 상품 데이터 전송
+  - 상품 상제 정보 : 상품 상세 페이지
+    <br>Path parameter를 사용하여 특정 상품의 상세 데이터 전송
+  - 필터링 : 메뉴별 혹은 카테고리별 상품 필터링
+    <br>Q 객체를 사용하여 필터 조건에 따라 상품을 거르고 해당 상품들의 데이터를 전송
+  - 검색 : 상품 검색
+    <br>상품명에 검색어가 포함된 상품들의 데이터를 전송
+  - 인기 상품 리스트 : 인기 상품 추천
+    <br>상품 상세 페이지 조회수를 기준으로 상위 5개 인기 상품의 데이터를 전송
 
 🧼 **문성호**
   - 회원가입 
@@ -91,7 +91,7 @@ UI 애니메이션 적용하여 생동감 표현 ( :focus-within, @keyframes ).
 <li><a target="_blank" rel="noopener noreferrer" href="https://camo.githubusercontent.com/268ac512e333b69600eb9773a8f80b7a251f4d6149642a50a551d4798183d621/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f52656163742d3230323332413f7374796c653d666f722d7468652d6261646765266c6f676f3d7265616374266c6f676f436f6c6f723d363144414642"><img src="https://camo.githubusercontent.com/268ac512e333b69600eb9773a8f80b7a251f4d6149642a50a551d4798183d621/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f52656163742d3230323332413f7374796c653d666f722d7468652d6261646765266c6f676f3d7265616374266c6f676f436f6c6f723d363144414642" alt="React" data-canonical-src="https://img.shields.io/badge/React-20232A?style=for-the-badge&amp;logo=react&amp;logoColor=61DAFB" style="max-width:100%;"></a></li>
 
 
-### Back-end skill
+###Back-end skill
             
 <li><a target="_blank" rel="noopener noreferrer" href="https://camo.githubusercontent.com/27250b9f428b32314f8610e1a996939cc116da5f8c4d8a2f8ed37104275085b8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f507974686f6e2d3134333534433f7374796c653d666f722d7468652d6261646765266c6f676f3d707974686f6e266c6f676f436f6c6f723d7768697465"><img src="https://camo.githubusercontent.com/27250b9f428b32314f8610e1a996939cc116da5f8c4d8a2f8ed37104275085b8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f507974686f6e2d3134333534433f7374796c653d666f722d7468652d6261646765266c6f676f3d707974686f6e266c6f676f436f6c6f723d7768697465" alt="Python" data-canonical-src="https://img.shields.io/badge/Python-14354C?style=for-the-badge&amp;logo=python&amp;logoColor=white" style="max-width:100%;"></a></li>
 <li><a target="_blank" rel="noopener noreferrer" href="https://camo.githubusercontent.com/4d74b36962a1b06aed5f035f2f95f131059b2b551c7e6d81630f7df7831b9f80/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446a616e676f2d3039324532303f7374796c653d666f722d7468652d6261646765266c6f676f3d646a616e676f266c6f676f436f6c6f723d7768697465"><img src="https://camo.githubusercontent.com/4d74b36962a1b06aed5f035f2f95f131059b2b551c7e6d81630f7df7831b9f80/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446a616e676f2d3039324532303f7374796c653d666f722d7468652d6261646765266c6f676f3d646a616e676f266c6f676f436f6c6f723d7768697465" alt="Django" data-canonical-src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&amp;logo=django&amp;logoColor=white" style="max-width:100%;"></a></li>
