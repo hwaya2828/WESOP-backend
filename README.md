@@ -23,7 +23,7 @@ Backend
 - Backend  
 : E-commerce의 기본 기능 구현에 초점을 맞췄습니다  
 (1) 회원가입 (2) 로그인 (3) 개인 정보 수정 (4) 메뉴 & 카테고리 (5) 상품 상제 정보 
-(6) 필터링 (7) 검색 (8) 인기 상품 리스트 (9) 장바구니 (10) 구매 내역 확인  
+<br>(6) 필터링 (7) 검색 (8) 인기 상품 리스트 (9) 장바구니 (10) 구매 내역 확인  
             
 **Modeling**   
 [Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb)*(Password : 723o35)*
@@ -37,7 +37,7 @@ Wesop (시연 영상 첨부 필요)
 ## 팀원
 김도은, 김휘성(PM), 문성호, 양미화, 최원근
 
-## Frontend 
+### Frontend 
 
 🧼 **최원근**
 
@@ -57,7 +57,7 @@ Wesop (시연 영상 첨부 필요)
   - 상세페이지 :
   - 카트추가 : fetch API 사용하여
 
-## Backend
+### Backend
 
 🧴 **양미화**
 
