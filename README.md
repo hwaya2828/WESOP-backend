@@ -75,13 +75,15 @@ Wesop (시연 영상 첨부 필요)
   - 비밀번호 암호화, 토큰 발행  
     bcrypt 활용한 비밀번호 hash 암호화/ jwt 발행
     
-  - 유효성 판단  
+  - 로그인 필수요소(계정 email, 계정 pw) 유효성 판단   
     정규 표현식 활용
     
   - 장바구니 상품 추가 삭제 수정 조회   
-    endpoint 통일 / http method와 path parameter를 통한 request 구현
+    endpoint 통일  
+    http method와 path parameter를 통한 request 구현
    
-  - 구매전환 및 구매내역 추가
+  - 구매전환 및 구매내역 추가  
+    구매 전환 시, 장바구니 상품 삭제 및 구매 내역 추가
 
 ## Skills
 
