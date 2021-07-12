@@ -42,7 +42,7 @@
   - [Modeling](https://aquerytool.com:443/aquerymain/index/?rurl=8afb35f3-b4f6-4dd1-aae2-b0497e086eeb) *(Password : 723o35)*
 
 - **시연 영상**    
-  - Wesop(시연 영상 첨부 필요)
+  - [Wesop](https://www.youtube.com/watch?v=J05y2eiE76Q&list=PLZTmS1zO_K1Zj4ZRa-eu3Ugt-DfGC7eXC&index=10)
 <br>
 
 ### Frontend 
