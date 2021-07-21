@@ -1,112 +1,153 @@
-import json, re, bcrypt, jwt
+import json
+import re
+import bcrypt
+import jwt
+import datetime
 
-from datetime               import datetime, timedelta
+from django.http  import JsonResponse
+from django.views import View
 
-from django.http            import JsonResponse
-from django.views           import View
-from django.core.exceptions import ObjectDoesNotExist
-
-from users.models           import User, SkinType
-from my_settings            import SECRET
-
-from users.utils            import Authorization_decorator
-
-class UserInformationView(View):
-    @Authorization_decorator
-    def post(self, request):
-        data = json.loads(request.body)
-        user = request.user
-        information = 'Nothing'
-
-        try:
-            if data['skin_type'] != '' :
-                information       = data['skin_type']
-                skin              = SkinType.objects.get(name=information) if information!='empty' else '' 
-                skin_id           = skin.id if skin else ''
-                user.skin_type_id = skin_id 
-                user.save()
-            
-            if data['address'] != '' :
-                information = data['address'] 
-                user.address = information if information != 'empty' else ''
-                user.save()
-
-            return JsonResponse({'MESSAGE': f'update {information}'}, status=200)
-        
-        except SkinType.DoesNotExist:
-            return JsonResponse({'MESSAGE':'Invalid skintype request'}, status=400)
+from users.models import User
+from my_settings  import SECRET, JWT_ALGORITHM, JWT_ACCESS_TOKEN_DURATION_SECONDS, JWT_REFRESH_TOKEN_DURATION_SECONDS
+from users.utils  import login_confirm
 
 class SignUpView(View):
     def post(self, request):
         try:
-            data  = json.loads(request.body)
+            data = json.loads(request.body)
 
-            email        = data['email']
-            password     = data['password']
-            first_name   = data['firstname']
-            last_name    = data['lastname']
-            phone_number = data.get('phonenumber', None)
+            if re.match('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.com$', data['email']) is None:
+                return JsonResponse({'message': 'EMAIL_FORM_ERROR'}, status=400)
 
-            if (re.match('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.com$', data['email']) is None):
-                return JsonResponse({'MESSAGE':'INVALID_EMAIL'}, status=400)
+            if User.objects.filter(email=data['email']).exists():
+                return JsonResponse({'message': 'ALREADY_EXIT_ERROR'}, status=400)
 
-            if (User.objects.filter(email=email).exists()):
-                return JsonResponse({'MESSAGE':'EXISTING_USER'}, status=400)
+            if not re.match('^(?=.*[a-zA-Z])(?=.*[0-9])[^ㄱ-ㅎ가-힣ㅏ-ㅣ]{6,10}$', data['password']):
+                return JsonResponse({'message': 'PASSWORD_FORM_ERROR'}, status=400)
 
-            if not (re.match('^(?=.*[A-Z])(?=.*[0-9])[^ㄱ-ㅎ가-힣ㅏ-ㅣ]{6,10}$', data['password'])):
-                return JsonResponse({'MESSAGE':'INVALID_PASSWORD'}, status=400)
+            if not re.match('^[가-힣a-zA-Z]{1,15}$', data['first_name']):
+                return JsonResponse({'message': 'FIRSTNAME_FORM_ERROR'}, status=400)
 
-            if not (re.match('^[가-힣a-zA-Z]{1,15}$', data['firstname'])):
-                return JsonResponse({'MESSAGE':'이름은 1글자 이상,15글자 이하,숫자가 아닌 입력.'}, status=400)
-
-            if not (re.match('^[가-힣a-zA-Z]{1,10}$', data['lastname'])):
-                return JsonResponse({'MESSAGE':'성은 1글자 이상,10글자 이하,숫자가 아닌 입력.'}, status=400)
+            if not re.match('^[가-힣a-zA-Z]{1,10}$', data['last_name']):
+                return JsonResponse({'message': 'LASTNAME_FORM_ERROR'}, status=400)
             
-            hash_password=bcrypt.hashpw(
-                password.encode('utf-8'),
-                bcrypt.gensalt()
+            hash_password = bcrypt.hashpw(
+                data['password'].encode('utf-8'), bcrypt.gensalt()
             ).decode('utf-8')
 
-            user = User.objects.create(
-                email       =email,
-                password    =hash_password,
-                first_name  =first_name,
-                last_name   =last_name,
-                phone       =phone_number
-                )
+            User.objects.create(
+                email      = data['email'],
+                password   = hash_password,
+                first_name = data['first_name'],
+                last_name  = data['last_name'],
+                phone      = data.get('phone', None)
+            )
 
-            return JsonResponse({'MESSAGE':'SUCCESS'}, status=201)
+            return JsonResponse({'message':'SUCCESS'}, status=201)
 
         except KeyError: 
-            return JsonResponse({'MESSAGE':'KeyError'}, status=400)
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
 
-class LoginView(View):
+class SignInView(View):
     def post(self, request):
         try:
-            data=json.loads(request.body)
+            data = json.loads(request.body)
 
-            signin_email    = data['email']
-            signin_password = data['password']
+            if not User.objects.filter(email=data['email']).exists():
+                return JsonResponse({"message":'INVALID_USER_ERROR'}, status=400)
 
-            if not signin_email and not signin_password:
-                return JsonResponse({"MESSAGE":"KEYERROR"}, status=400)
+            user = User.objects.get(email=data['email'])  
 
-            if not User.objects.filter(email=signin_email).exists():
-                return JsonResponse({"MESSAGE":"INVALID_EMAIL"}, status=400)
-
-            user            = User.objects.get(email=signin_email)         
-            hashed_password = user.password.encode('utf-8')
-
-            if not bcrypt.checkpw(signin_password.encode('utf-8'), hashed_password):
-                return JsonResponse({'MESSAGE':'INVALID_PASSWORD'}, status=401)
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'message': 'INVALID_USER_ERROR'}, status=400)
 
             access_token = jwt.encode(
-                        {'user_id' : user.id, 'exp':datetime.utcnow()+timedelta(minutes=120)}, 
+                        {
+                            'user_id' : user.id, 
+                            'iat'     : datetime.datetime.now().timestamp(),
+                            'exp'     : datetime.datetime.now().timestamp() + JWT_ACCESS_TOKEN_DURATION_SECONDS
+                        }, 
                         SECRET, 
-                        algorithm = 'HS256'
-                    )
+                        JWT_ALGORITHM
+            )
 
-            return JsonResponse({"token":access_token, "MESSAGE":"SUCCESS"} ,status=200)
+            if user.refresh_token:
+                payload = jwt.decode(
+                    user.refresh_token,
+                    SECRET,
+                    JWT_ALGORITHM
+                )
+                if datetime.datetime.now().timestamp() < payload['exp']:
+                    refresh_token = user.refresh_token
+            else:
+                refresh_token = jwt.encode(
+                            {
+                                'user_id' : user.id, 
+                                'iat'     : datetime.datetime.now().timestamp(),
+                                'exp'     : datetime.datetime.now().timestamp() + JWT_REFRESH_TOKEN_DURATION_SECONDS
+                            }, 
+                            SECRET, 
+                            JWT_ALGORITHM
+                )
+                user.refresh_token = refresh_token
+                user.save()
+
+            return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token} ,status=200)
 
         except KeyError: 
-            return JsonResponse({'MESSAGE':'KeyError'}, status=400)
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+
+class UserInformationView(View):
+    @login_confirm
+    def get(self, request):
+        user = request.user
+
+        result = {
+            'user_id'         : user.id,
+            'user_email'      : user.email,
+            'user_first_name' : user.first_name,
+            'user_last_name'  : user.last_name,
+            'user_email'      : user.email,
+            'user_skin_type'  : user.skin_type.name if user.skin_type else None
+        }
+
+        return JsonResponse({'result': result}, status = 200)
+
+class ModifyUserInformationView(View):
+    @login_confirm
+    def patch(self, request, user_id):
+        try:
+            data = json.loads(request.body)
+            user = User.objects.get(id=user_id)
+            
+            user.first_name = data.get('first_name', user.first_name)
+            user.last_name  = data.get('last_name', user.last_name)
+
+            if data.get('password', None):        
+                if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+                        return JsonResponse({'message': 'NOT_MATCH_PASSWORD_ERROR'}, status=400)
+                
+                if not re.match('^(?=.*[a-zA-Z])(?=.*[0-9])[^ㄱ-ㅎ가-힣ㅏ-ㅣ]{6,10}$', data['new_password']):
+                    return JsonResponse({'message': 'NEW_PASSWORD_FORM_ERROR'}, status=400)
+                
+                hash_password = bcrypt.hashpw(
+                    data['new_password'].encode('utf-8'), bcrypt.gensalt()
+                ).decode('utf-8')
+
+                user.password = hash_password
+            
+            user.birth_day    = data.get('birth_day') if data.get('birth_day') else user.birth_day if user.birth_day else None
+            user.skin_type_id = data.get('skin_type_id') if data.get('skin_type_id') else user.skin_type_id if user.skin_type_id else None
+            user.update_at    = datetime.datetime.now()
+            user.save()
+
+            return JsonResponse({'message':'SUCCESS'}, status=200)
+        
+        except KeyError: 
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
+
+    @login_confirm
+    def delete(self, request, user_id):
+        User.objects.get(id=user_id).delete()
+
+        return JsonResponse({'message': 'SUCCESS'}, status=204)
