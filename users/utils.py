@@ -12,7 +12,7 @@ def login_confirm(original_function):
 
     def wrapper(self, request, *arg, **kwarg):
         try:
-            access_token = request.headers.get('AccessToken', None)
+            access_token = request.headers.get('access-token', None)
 
             if not access_token:
                 return JsonResponse({'message': 'LOGIN_REQUIRED'}, status=401)
@@ -27,7 +27,7 @@ def login_confirm(original_function):
             request.user = user
 
         except jwt.exceptions.ExpiredSignatureError:
-            refresh_token = request.headers.get('RefreshToken')
+            refresh_token = request.headers.get('refresh-token')
 
             payload = jwt.decode(
                 refresh_token, 
