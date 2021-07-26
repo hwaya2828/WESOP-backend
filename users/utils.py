@@ -12,7 +12,7 @@ def login_confirm(original_function):
 
     def wrapper(self, request, *arg, **kwarg):
         try:
-            access_token = request.headers.get('AaccessToken', None)
+            access_token = request.headers.get('AccessToken', None)
 
             if not access_token:
                 return JsonResponse({'message': 'LOGIN_REQUIRED'}, status=401)
